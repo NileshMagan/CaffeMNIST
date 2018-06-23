@@ -42,33 +42,4 @@ net.forward()
 scores = net.blobs['ip2'].data
 print scores
 print scores.argmax()
-
-#net = caffe.Net(MODEL_FILE, PRETRAINED, caffe.TEST)
-#caffe.set_mode_cpu()
-
-#print "successfully loaded classifier"
-
-#IMAGE_FILE = 'examples/mnist/9_28x28.png'
-#img = cv2.imread(IMAGE_FILE1,0)
-#if img.shape != [28,28]:
-#        img2 = cv2.resize(img,(28,28))
-#        img = img2.reshape(28,28,-1);
-#else:
-#        img = img.reshape(28,28,-1);
-
-#img = 1.0 - img/255.0
-
-#print "successfully parsed image"
-
-## predict takes any number of images,
-## and formats them for the Caffe net automatically
-#res = net.forward_all(data = np.asarray([img.transpose(2,0,1)]))
-#pred = res['prob'][0]
-#print pred
-#print pred.argmax()
-
-## This code has been copied and modified from the following link:
-## https://github.com/9crk/caffe-mnist-test/blob/master/mnist_test.py
-
-
-
+cv2.waitKey(0)
