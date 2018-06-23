@@ -91,7 +91,9 @@ static void get_gpus(vector<int>* gpus) {
     int count = 0;
 #ifndef CPU_ONLY
     CUDA_CHECK(cudaGetDeviceCount(&count));
+    LOG(INFO) << "\n---- DOING GPU ----\n";
 #else
+    LOG(INFO) << "\n==== DOING CPU ====";
     NO_GPU;
 #endif
     for (int i = 0; i < count; ++i) {

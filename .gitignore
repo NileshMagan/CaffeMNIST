@@ -97,3 +97,7 @@ LOCK
 LOG*
 CURRENT
 MANIFEST-*
+
+# Test Images
+*.jpg
+*.png
