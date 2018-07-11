@@ -5,7 +5,7 @@ import cv2
 
 # Make sure that caffe is on the python path:
 #CAFFE_ROOT = '/home/caffe/caffe/' # CHANGE THIS LINE TO YOUR Caffe PATH
-CAFFE_ROOT = '/media/nileshm/B2A07268A07232C9/Users/niles/Downloads/Uni/PartIV/Code/ubuntuCaffe/caffe/' # CHANGE THIS LINE TO YOUR Caffe PATH
+CAFFE_ROOT = '/media/nileshm/B2A07268A07232C9/Users/niles/Downloads/Uni/PartIV/Code/ubuntuCaffeFiles/caffe/' # CHANGE THIS LINE TO YOUR Caffe PATH
 sys.path.insert(0, CAFFE_ROOT + 'python')
 
 import caffe
@@ -28,8 +28,8 @@ transformer = caffe.io.Transformer({'data': (1, 1, 28, 28)})
 transformer.set_transpose('data', (2, 0, 1))    
 transformer.set_raw_scale('data', 1/255.)
 
-assert os.path.exists(IMAGE_FILE4), "image %s not found" % args.image
-image = cv2.imread(IMAGE_FILE4)
+assert os.path.exists(IMAGE_FILE1), "image %s not found" % args.image
+image = cv2.imread(IMAGE_FILE1)
 image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 #image = 255 - image
 image.resize((28, 28, 1))

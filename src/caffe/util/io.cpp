@@ -12,16 +12,22 @@
 
 #include <algorithm>
 #include <fstream>  // NOLINT(readability/streams)
+#include <iostream>
 #include <string>
 #include <vector>
 
 #include "caffe/common.hpp"
 #include "caffe/proto/caffe.pb.h"
 #include "caffe/util/io.hpp"
+#include <google/protobuf/descriptor.h>
 
 const int kProtoReadBytesLimit = INT_MAX;  // Max size of 2 GB minus 1 byte.
 
 namespace caffe {
+
+
+// std::string PT_STRING = "THIS IS THE STRING";
+std::string get_PT_STRING(void);
 
 using google::protobuf::io::FileInputStream;
 using google::protobuf::io::FileOutputStream;
@@ -30,12 +36,14 @@ using google::protobuf::io::CodedInputStream;
 using google::protobuf::io::ZeroCopyOutputStream;
 using google::protobuf::io::CodedOutputStream;
 using google::protobuf::Message;
+using google::protobuf::Reflection;
 
 bool ReadProtoFromTextFile(const char* filename, Message* proto) {
   int fd = open(filename, O_RDONLY);
   CHECK_NE(fd, -1) << "File not found: " << filename;
   FileInputStream* input = new FileInputStream(fd);
   bool success = google::protobuf::TextFormat::Parse(input, proto);
+  LOG(INFO) << "\n\n----------------> INSIDE TEXT READ, READING FILE: " << filename << "<---------------------------- \n\n";
   delete input;
   close(fd);
   return success;
@@ -49,14 +57,30 @@ void WriteProtoToTextFile(const Message& proto, const char* filename) {
   close(fd);
 }
 
+const Message* DuplicateMessage(const Message *msg) {
+  Message *copy = msg->New();
+  copy->CopyFrom(*msg);
+  // do stuff
+  return copy;
+}
+
 bool ReadProtoFromBinaryFile(const char* filename, Message* proto) {
   int fd = open(filename, O_RDONLY);
   CHECK_NE(fd, -1) << "File not found: " << filename;
   ZeroCopyInputStream* raw_input = new FileInputStream(fd);
   CodedInputStream* coded_input = new CodedInputStream(raw_input);
   coded_input->SetTotalBytesLimit(kProtoReadBytesLimit, 536870912);
-
   bool success = proto->ParseFromCodedStream(coded_input);
+ 
+  LOG(INFO) << "\n\n----------------> INSIDE BINARY, READING FILE: " << filename << "<---------------------------- \n\n";
+
+
+  const string i = "TESTING_WRITING_TO_PROTO.txt";
+  WriteProtoToTextFile(*DuplicateMessage(proto), i.c_str());
+
+  LOG(INFO) << get_PT_STRING().c_str();
+
+  LOG(INFO) << "\n\n----------------> FINISHED WRITING TO FILE <---------------------------- \n\n";
 
   delete coded_input;
   delete raw_input;
@@ -235,4 +259,11 @@ void CVMatToDatum(const cv::Mat& cv_img, Datum* datum) {
   datum->set_data(buffer);
 }
 #endif  // USE_OPENCV
+
+std::string get_PT_STRING(void) {
+  return "THIS IS THE STRING";
+}
+
+
 }  // namespace caffe
+
