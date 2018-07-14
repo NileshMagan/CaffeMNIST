@@ -17,7 +17,26 @@
 #include "caffe/util/math_functions.hpp"
 #include "caffe/util/upgrade_proto.hpp"
 
+// #include <stdio.h>
+// #include <execinfo.h>
+// #include <signal.h>
+// #include <stdlib.h>
+// #include <unistd.h>
+
 namespace caffe {
+
+// void handler(int sig) {
+//   void *array[10];
+//   size_t size;
+
+//   // get void*'s for all entries on the stack
+//   size = backtrace(array, 10);
+
+//   // print out all the frames to stderr
+//   fprintf(stderr, "Error: signal %d:\n", sig);
+//   backtrace_symbols_fd(array, size, STDERR_FILENO);
+//   exit(1);
+// }
 
 template <typename Dtype>
 Net<Dtype>::Net(const NetParameter& param) {
@@ -27,6 +46,8 @@ Net<Dtype>::Net(const NetParameter& param) {
 template <typename Dtype>
 Net<Dtype>::Net(const string& param_file, Phase phase,
     const int level, const vector<string>* stages) {
+
+  // signal(SIGSEGV, handler);   // install our handler
   NetParameter param;
   ReadNetParamsFromTextFileOrDie(param_file, &param);
   // Set phase, stages and level
