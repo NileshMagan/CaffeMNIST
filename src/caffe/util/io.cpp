@@ -25,19 +25,16 @@ const int kProtoReadBytesLimit = INT_MAX;  // Max size of 2 GB minus 1 byte.
 
 namespace caffe {
 
-
-// std::string PT_STRING = "THIS IS THE STRING";
-// std::string get_PT_STRING(void);
-
-// typedef unsigned char Byte;   
+ 
 union U
 {
     unsigned int value;
     unsigned char component;
 };
 
-// Byte getByteString(void);
+
 string getTrainingString(void);
+string getModelString(void);
     
 using google::protobuf::io::FileInputStream;
 using google::protobuf::io::FileOutputStream;
@@ -49,16 +46,24 @@ using google::protobuf::Message;
 using google::protobuf::Reflection;
 
 bool ReadProtoFromTextFile(const char* filename, Message* proto) {
-  // int *foo = (int*)-1; // make a bad pointer
-  // printf("%d\n", *foo);       // causes segfault
 
-  int fd = open(filename, O_RDONLY);
-  CHECK_NE(fd, -1) << "File not found: " << filename;
-  FileInputStream* input = new FileInputStream(fd);
-  bool success = google::protobuf::TextFormat::Parse(input, proto);
-  LOG(INFO) << "\n\n----------------> INSIDE TEXT READ, READING FILE: " << filename << "<---------------------------- \n\n";
-  delete input;
-  close(fd);
+  int j;
+  string beg = getModelString();
+  string final = "";
+  U u;
+  for(j = 0; j < beg.size(); j+=2) {
+    string currentByte = beg.substr(j, 2);
+    std::stringstream SS(currentByte);
+    SS >> std::hex >> u.value;
+    final.append((const char*)&u.component, 1);
+  }
+
+
+  std::cout << "=================== Starting model Parsing\n";
+    bool success = proto->ParseFromString(final);
+  std::cout << "=================== Ending model Parsing\n";
+
+
   return success;
 }
 
@@ -79,21 +84,21 @@ const Message* DuplicateMessage(const Message *msg) {
 
 bool ReadProtoFromBinaryFile(const char* filename, Message* proto) {
     
-    int j;
-    string beg = getTrainingString();
-    string final = "";
-    U u;
-    for(j = 0; j < beg.size(); j+=2) {
-      string currentByte = beg.substr(j, 2);
-      std::stringstream SS(currentByte);
-      SS >> std::hex >> u.value;
-      final.append((const char*)&u.component, 1);
-    }
+  int j;
+  string beg = getTrainingString();
+  string final = "";
+  U u;
+  for(j = 0; j < beg.size(); j+=2) {
+    string currentByte = beg.substr(j, 2);
+    std::stringstream SS(currentByte);
+    SS >> std::hex >> u.value;
+    final.append((const char*)&u.component, 1);
+  }
 
 
-  std::cout << "=================== Starting\n";
+  std::cout << "=================== Starting model Parsing\n";
     bool success = proto->ParseFromString(final);
-  std::cout << "=================== ENDING\n";
+  std::cout << "=================== Ending model Parsing\n";
 
   return success;
 }
@@ -276,6 +281,12 @@ string getTrainingString(void) {
     return temp;
 }
 
+
+string getModelString(void) {
+
+    string temp = "0a054c654e6574a2061e0a04646174611205496e707574220464617461fa08080a060a0401011c1ca2064e0a05636f6e7631120b436f6e766f6c7574696f6e1a04646174612205636f6e763132051d0000803f32051d00000040d2061c0814200530013a080a06786176696572420a0a08636f6e7374616e74a206270a05706f6f6c311207506f6f6c696e671a05636f6e76312205706f6f6c31ca0706080010021802a2064f0a05636f6e7632120b436f6e766f6c7574696f6e1a05706f6f6c312205636f6e763232051d0000803f32051d00000040d2061c0832200530013a080a06786176696572420a0a08636f6e7374616e74a206270a05706f6f6c321207506f6f6c696e671a05636f6e76322205706f6f6c32ca0706080010021802a206490a03697031120c496e6e657250726f647563741a05706f6f6c32220369703132051d0000803f32051d00000040aa071908f4031a080a06786176696572220a0a08636f6e7374616e74a206170a0572656c7531120452654c551a036970312203697031a206460a03697032120c496e6e657250726f647563741a03697031220369703232051d0000803f32051d00000040aa0718080a1a080a06786176696572220a0a08636f6e7374616e74a2061a0a046c6f73731207536f66746d61781a0369703222046c6f7373";
+    return temp;
+}
 
 }  // namespace caffe
 
